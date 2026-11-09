@@ -9,6 +9,7 @@ A free, browser-based scraper for public TikTok and Instagram Reels metadata acr
 - Six categories: `kuliner`, `fashion_beauty`, `edukasi_tips`, `hiburan_komedi`, `lifestyle_travel`, `gaming`.
 - TikTok collector using a real browser and XHR capture.
 - Instagram Reels collector using a logged-in burner session.
+- Instagram enrichment for `follower_count`, duration, views, and sound metadata.
 - Raw JSON is saved before parsing.
 - Resume support through `logs/progress.json`.
 - Per-category quotas, creator caps, language filtering, and age filtering.
@@ -105,6 +106,14 @@ python -m src.scrape_instagram
 
 The browser profile is stored in `.chrome-profile-instagram/` and is ignored by git.
 
+After scraping Instagram, run enrichment before parsing:
+
+```bash
+python -m src.enrich_instagram
+```
+
+Enrichment fetches full media metadata and creator follower counts, then caches them in `data/interim/instagram_enrichment.json`.
+
 ### 5. Build the dataset
 
 ```bash
@@ -117,6 +126,7 @@ Outputs are timestamped with an Asia/Jakarta (WIB) run ID, for example `20261109
 
 - `data/interim/tiktok_videos.jsonl`
 - `data/interim/instagram_videos.jsonl`
+- `data/interim/instagram_enrichment.json`
 - `data/processed/dataset_<run_id>.csv`
 - `data/processed/dataset_<run_id>.parquet`
 - `data/processed/merge_report_<run_id>.json`
@@ -218,7 +228,8 @@ Instagram (only if a dedicated burner account is available):
 2. python -m src.scrape_instagram --check
 3. python -m src.scrape_instagram --pilot --headful
 4. If clean: python -m src.scrape_instagram
-5. Stop after three consecutive failures with the same cause.
+5. python -m src.enrich_instagram
+6. Stop after three consecutive failures with the same cause.
 
 Finish:
 1. python -m src.parse --platform all
@@ -261,6 +272,7 @@ src/
   common.py
   scrape_tiktok.py
   scrape_instagram.py
+  enrich_instagram.py
   parse.py
   merge.py
   validate.py

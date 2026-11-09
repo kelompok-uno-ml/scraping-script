@@ -37,6 +37,9 @@ check-ig:
 pilot-ig:
 	$(PY) -m src.scrape_instagram --pilot --headful
 
+enrich-ig:
+	$(PY) -m src.enrich_instagram
+
 scale-ig:
 	$(PY) -m src.scrape_instagram
 

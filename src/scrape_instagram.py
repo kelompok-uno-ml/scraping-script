@@ -39,7 +39,7 @@ from src.parse import _walk_ig_objects
 LOG = logging.getLogger("instagram")
 
 
-def build_session(cfg: dict[str, Any]):
+def build_session(cfg: dict[str, Any], record_requests: bool = True):
     from scrapling.fetchers import StealthySession
 
     profile = resolve_path(cfg.get("user_data_dir", ".chrome-profile-instagram"))
@@ -47,7 +47,7 @@ def build_session(cfg: dict[str, Any]):
     kwargs: dict[str, Any] = {
         "headless": bool(cfg.get("headless", False)),
         "real_chrome": bool(cfg.get("real_chrome", True)),
-        "record_requests": True,
+        "record_requests": record_requests,
         "max_pages": 1,
         "max_recorded_requests": int(cfg.get("max_recorded_requests", 400)),
         "locale": cfg.get("locale", "id-ID"),

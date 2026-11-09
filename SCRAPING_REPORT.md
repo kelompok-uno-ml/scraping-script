@@ -52,9 +52,21 @@ Only a subset of categories has been run beyond the first scroll. `gaming` was t
 | `gaming` | 191 | 700 | 9 seeds, 8 scrolls |
 | **Total** | **323** | **4,200** | pilot only |
 
-Instagram has not been run because a burner account is not available yet.
+Instagram pilot was run with a logged-in burner session (6 seeds, 1 scroll each):
 
-### Creator-tier composition
+| Category | Instagram rows | Target |
+|---|---:|---:|
+| `kuliner` | 14 | 250 |
+| `fashion_beauty` | 6 | 250 |
+| `edukasi_tips` | 7 | 250 |
+| `hiburan_komedi` | 11 | 250 |
+| `lifestyle_travel` | 3 | 250 |
+| `gaming` | 10 | 250 |
+| **Total** | **51** | **1,500** |
+
+Raw Instagram pilot: 137 unique videos. After enrichment, `follower_count`, `duration_sec`, `views`, `likes`, and `comments` are 0% null. `shares`, `saves`, and `sound_usage_count` remain unavailable; `sound_id` is 5.9% null and `sound_title` is 29.4% null.
+
+### Creator-tier composition (TikTok pilot)
 
 Target: 30% small / 40% medium / 30% large. Actual pilot composition is reported as-is.
 
@@ -96,13 +108,16 @@ Other seeds produced no valid rows in the pilot. The full per-seed table is avai
 - `follower_count` is available from `authorStats.followerCount` for the sampled TikTok videos.
 - TikTok's `textLanguage` field is used before caption detection to avoid dropping mixed-language gaming captions too aggressively.
 - `sound_usage_count` is unavailable and remains `null`.
-- Instagram profile, hashtag, and embed endpoints all return a login wall without a session.
+- Instagram hashtag pages redirect to keyword search, so the collector stores search XHR responses.
+- Instagram media enrichment (`/api/v1/media/<pk>/info/`) fills duration, views, likes, comments, and sound metadata.
+- Instagram creator follower counts are parsed from the profile page `og:description`.
+- Instagram `shares`, `saves`, and `sound_usage_count` are not exposed and remain `null`.
 
 ## 6. Not done yet
 
 - Full TikTok scale-up across all categories.
 - The additional gaming seeds added to `config/seeds.yaml`.
-- Instagram login, pilot, and scale-up.
+- Instagram scale-up (pilot and enrichment are done).
 - Final creator-tier balancing, weekly distribution review, and target-vs-actual tables.
 - Final acceptance check.
 

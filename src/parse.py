@@ -304,6 +304,16 @@ def map_ig_media(
 def parse_instagram(raw_root: Path, out_file: Path, salt: str) -> list[dict[str, Any]]:
     best: dict[str, dict[str, Any]] = {}
     seeds_cfg = load_seeds()
+    enrichment_path = out_file.parent / "instagram_enrichment.json"
+    enrichment: dict[str, Any] = {}
+    if enrichment_path.exists():
+        try:
+            enrichment = json.loads(enrichment_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            enrichment = {}
+    media_enrichment = enrichment.get("media", {})
+    profiles = enrichment.get("profiles", {})
+
     base = raw_root / "instagram"
     for raw_file in iter_json_files(base):
         meta = meta_for(raw_file)
@@ -321,6 +331,27 @@ def parse_instagram(raw_root: Path, out_file: Path, salt: str) -> list[dict[str,
             record = map_ig_media(media, seed, category, scrape_timestamp, salt)
             if not record:
                 continue
+            extra = media_enrichment.get(record["video_id"], {})
+            username = (media.get("user") or media.get("owner") or {}).get("username")
+            profile = profiles.get(username, {}) if username else {}
+            for key in (
+                "duration_sec",
+                "views",
+                "likes",
+                "comments",
+                "shares",
+                "saves",
+                "sound_id",
+                "sound_title",
+                "is_original_sound",
+                "sound_usage_count",
+            ):
+                if record.get(key) is None and extra.get(key) is not None:
+                    record[key] = extra[key]
+            if record.get("follower_count") is None and profile.get("follower_count") is not None:
+                record["follower_count"] = profile["follower_count"]
+            if record.get("post_timestamp") is None and extra.get("post_timestamp"):
+                record["post_timestamp"] = iso_utc(extra["post_timestamp"])
             _prefer_earliest(best, record)
 
     records = sorted(best.values(), key=lambda row: row.get("post_timestamp") or "")
