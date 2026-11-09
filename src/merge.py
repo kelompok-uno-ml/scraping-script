@@ -7,8 +7,10 @@ import json
 import logging
 import math
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -17,7 +19,6 @@ from src.common import (
     is_indonesian_caption,
     is_within_age_window,
     load_settings,
-    now_utc,
     resolve_path,
     setup_logging,
 )
@@ -224,12 +225,17 @@ def summarize(df: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def default_run_id() -> str:
-    return now_utc().strftime("%Y%m%dT%H%M%SZ")
+def run_timezone(settings: dict[str, Any]) -> ZoneInfo:
+    name = settings.get("project", {}).get("run_timezone", "Asia/Jakarta")
+    return ZoneInfo(name)
+
+
+def default_run_id(settings: dict[str, Any]) -> str:
+    return datetime.now(run_timezone(settings)).strftime("%Y%m%dT%H%M%S%z")
 
 
 def merge(settings: dict[str, Any], run_id: str | None = None) -> dict[str, Any]:
-    run_id = run_id or default_run_id()
+    run_id = run_id or default_run_id(settings)
     interim = resolve_path(settings["paths"]["interim"])
     processed = resolve_path(settings["paths"]["processed"])
     processed.mkdir(parents=True, exist_ok=True)
@@ -285,9 +291,9 @@ def merge(settings: dict[str, Any], run_id: str | None = None) -> dict[str, Any]
         "creator_cap_dropped": creator_cap_dropped,
         "output": summarize(df),
         "files": {
-            "csv": str(csv_path),
-            "parquet": str(parquet_path) if parquet_path else None,
-            "merge_report": str(merge_report_path),
+            "csv": csv_path.name,
+            "parquet": parquet_path.name if parquet_path else None,
+            "merge_report": merge_report_path.name,
         },
     }
     merge_report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -295,9 +301,11 @@ def merge(settings: dict[str, Any], run_id: str | None = None) -> dict[str, Any]
         json.dumps(
             {
                 "run_id": run_id,
-                "csv": str(csv_path),
-                "parquet": str(parquet_path) if parquet_path else None,
-                "merge_report": str(merge_report_path),
+                "run_timezone": str(run_timezone(settings)),
+                "created_at": datetime.now(run_timezone(settings)).isoformat(),
+                "csv": csv_path.name,
+                "parquet": parquet_path.name if parquet_path else None,
+                "merge_report": merge_report_path.name,
             },
             ensure_ascii=False,
             indent=2,

@@ -281,6 +281,8 @@ def latest_dataset(processed: Path) -> Path | None:
         try:
             data = json.loads(pointer.read_text(encoding="utf-8"))
             csv_path = Path(data.get("csv", ""))
+            if not csv_path.is_absolute():
+                csv_path = processed / csv_path
             if csv_path.exists():
                 return csv_path
         except (json.JSONDecodeError, OSError):

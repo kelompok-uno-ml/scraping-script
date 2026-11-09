@@ -1,6 +1,8 @@
 project:
   # All timestamps are stored in UTC (ISO 8601). This timezone is only for the browser.
   browser_timezone: Asia/Jakarta
+  # Timezone used in output run IDs and filenames.
+  run_timezone: Asia/Jakarta
 
 paths:
   raw: data/raw

@@ -6,12 +6,13 @@ import pandas as pd
 
 os.environ.setdefault("SCRAPE_SALT", "test-salt")
 
-from src.common import now_utc
+from src.common import load_settings, now_utc
 from src.merge import (
     cap_creator_share,
     cap_per_category,
     cap_per_creator_per_category,
     cap_per_seed,
+    default_run_id,
     dedupe,
     filter_rows,
     normalize,
@@ -54,6 +55,9 @@ def make_record(
 
 
 class MergeTest(unittest.TestCase):
+    def test_default_run_id_uses_jakarta_time(self):
+        self.assertRegex(default_run_id(load_settings()), r"^\d{8}T\d{6}\+0700$")
+
     def test_normalize_and_dedupe(self):
         df = normalize(pd.DataFrame([make_record("1", "a"), make_record("1", "a")]))
         self.assertEqual(len(df), 2)

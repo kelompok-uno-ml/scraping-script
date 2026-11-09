@@ -113,7 +113,7 @@ python -m src.merge
 python -m src.validate
 ```
 
-Outputs are timestamped with a UTC run ID, for example `20261109T192500Z`:
+Outputs are timestamped with an Asia/Jakarta (WIB) run ID, for example `20261109T192500+0700`:
 
 - `data/interim/tiktok_videos.jsonl`
 - `data/interim/instagram_videos.jsonl`
@@ -129,7 +129,7 @@ Use a custom label if needed:
 python -m src.merge --run-id pilot_01
 ```
 
-`python -m src.validate` validates the latest dataset automatically.
+`python -m src.validate` validates the latest dataset automatically. Data timestamps themselves remain UTC (ISO 8601).
 
 ### 6. Suggest more seeds
 
@@ -268,6 +268,19 @@ src/
 tests/
 data/          # ignored by git
 logs/          # ignored by git
+```
+
+## Commit convention
+
+This repository follows [Conventional Commits](https://www.conventionalcommits.org/):
+
+```text
+feat: add a new feature
+fix: fix a bug
+docs: update documentation
+chore: maintenance or tooling
+refactor: code change without behavior change
+test: add or update tests
 ```
 
 ## Compliance
