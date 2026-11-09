@@ -240,6 +240,18 @@ Finish:
 5. Never commit .env, data/, logs/, or browser profiles.
 ```
 
+### Set up the scraper
+
+Copy this into your coding agent:
+
+```text
+Install this scraping repository and verify the environment. Create a Python
+virtual environment, install the requirements, run `scrapling install`, create
+`.env` from `.env.example` with a random `SCRAPE_SALT`, and run the test suite.
+Show me the setup plan for approval, then verify the installation. Do not start
+scraping until I approve the pilot.
+```
+
 ## Troubleshooting
 
 **Chrome does not open**
