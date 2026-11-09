@@ -26,15 +26,15 @@ A free, browser-based scraper for public TikTok and Instagram Reels metadata acr
 - At least 4 GB RAM and 2 GB free disk space
 - Stable internet connection
 - An Indonesian IP is recommended so TikTok serves relevant Indonesian content
-- Optional: a dedicated Instagram burner account for live Instagram scraping
+- a dedicated Instagram burner account for live Instagram scraping
 
 No paid API or public dataset is required.
 
 ## Installation
 
 ```bash
-git clone https://github.com/<your-username>/social-trend-scraper.git
-cd social-trend-scraper
+git clone https://github.com/kelompok-uno-ml/scraping-script.git
+cd scraping-script
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -280,19 +280,6 @@ src/
 tests/
 data/          # ignored by git
 logs/          # ignored by git
-```
-
-## Commit convention
-
-This repository follows [Conventional Commits](https://www.conventionalcommits.org/):
-
-```text
-feat: add a new feature
-fix: fix a bug
-docs: update documentation
-chore: maintenance or tooling
-refactor: code change without behavior change
-test: add or update tests
 ```
 
 ## Compliance
