@@ -1,0 +1,17 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/
+
+data/
+logs/
+.chrome-profile-instagram/
+config/seeds_generated.yaml
+
+# Internal project briefs, not part of the public repository.
+BRIEF_SCRAPING.MD
+UPDATE_BRIEF.MD

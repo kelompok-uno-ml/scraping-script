@@ -1,0 +1,120 @@
+project:
+  # All timestamps are stored in UTC (ISO 8601). This timezone is only for the browser.
+  browser_timezone: Asia/Jakarta
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  logs: logs
+  progress: logs/progress.json
+  instagram_profile: .chrome-profile-instagram
+
+filters:
+  min_age_days: 7
+  max_age_days: 90
+  language: id
+  # Global cap: no creator may hold more than 5% of the dataset.
+  max_creator_share: 0.05
+  # Per-category cap: maximum 5 videos per creator in each category.
+  max_per_creator_per_category: 5
+  # Maximum videos kept per seed after deduplication.
+  max_per_seed: 250
+  # No category may exceed 25% of a platform's total.
+  max_category_share: 0.25
+
+creator_tiers:
+  small_max: 10000
+  medium_max: 100000
+
+composition_target:
+  small: 0.30
+  medium: 0.40
+  large: 0.30
+
+# Per-category quotas. Totals: 4,200 TikTok + 1,500 Instagram.
+category_targets:
+  kuliner:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+  fashion_beauty:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+  edukasi_tips:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+  hiburan_komedi:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+  lifestyle_travel:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+  gaming:
+    tiktok_min: 600
+    tiktok_target: 700
+    tiktok_max: 1000
+    instagram_min: 200
+    instagram_target: 250
+    instagram_max: 400
+
+tiktok:
+  target: 4200
+  max_per_seed: 250
+  scrolls: 10
+  scroll_px: 2500
+  sleep_min: 2.0
+  sleep_max: 5.0
+  long_pause_every: 25
+  long_pause_sec: 45
+  # Headful mode is more reliable on a local Mac. Try headless only after a pilot.
+  headless: false
+  real_chrome: true
+  locale: id-ID
+  timezone_id: Asia/Jakarta
+  network_idle: false
+  fetch_timeout_ms: 90000
+  retries: 3
+  max_recorded_requests: 800
+  # Optional: block video CDNs to save bandwidth, e.g.
+  # ["tiktokcdn.com", "tiktokcdn-us.com", "tiktokv.com"].
+  blocked_domains: []
+
+instagram:
+  target: 1500
+  max_per_seed: 200
+  scrolls: 10
+  scroll_px: 2200
+  sleep_min: 3.0
+  sleep_max: 6.0
+  long_pause_every: 15
+  long_pause_sec: 60
+  # Log in manually once with `python -m src.scrape_instagram --login`.
+  headless: false
+  real_chrome: true
+  locale: id-ID
+  timezone_id: Asia/Jakarta
+  network_idle: false
+  fetch_timeout_ms: 90000
+  retries: 3
+  max_recorded_requests: 600
+  blocked_domains: []

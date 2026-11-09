@@ -1,0 +1,80 @@
+# Seeds per category. Each seed belongs to exactly one category.
+# The leading # is optional; the loader removes it.
+
+kuliner:
+  - "#kulinerindonesia"
+  - "#resepsimple"
+  - "#resepmudah"
+  - "#masakrumahan"
+  - "#jajanan"
+  - "#reviewmakanan"
+  - "#streetfoodindonesia"
+  - "#kopikekinian"
+  - "#mukbang"
+
+fashion_beauty:
+  - "#ootdindonesia"
+  - "#ootd"
+  - "#skincareroutine"
+  - "#makeuptutorial"
+  - "#hijabstyle"
+  - "#fashionindonesia"
+  - "#reviewskincare"
+  - "#haircare"
+  - "#grwm"
+
+edukasi_tips:
+  - "#tipsbelajar"
+  - "#faktaunik"
+  - "#tipskeuangan"
+  - "#edukasi"
+  - "#belajarbareng"
+  - "#tipskarir"
+  - "#investasi"
+  - "#produktivitas"
+  - "#wawasan"
+
+hiburan_komedi:
+  - "#komedi"
+  - "#lucu"
+  - "#prank"
+  - "#videolucu"
+  - "#skit"
+  - "#storytime"
+  - "#relatable"
+  - "#meme"
+  - "#challenge"
+
+lifestyle_travel:
+  - "#wisataindonesia"
+  - "#dailyvlog"
+  - "#staycation"
+  - "#traveling"
+  - "#liburan"
+  - "#hidupsehat"
+  - "#morningroutine"
+  - "#hiddengem"
+  - "#aesthetic"
+
+gaming:
+  - "#gamingindonesia"
+  - "#gaming"
+  - "#gamerindonesia"
+  - "#mobilelegends"
+  - "#freefire"
+  - "#pubgmobile"
+  - "#minecraft"
+  - "#roblox"
+  - "#gameplay"
+  # Extra gaming seeds because this category has a lower valid-video yield.
+
+  - "#mobilelegendsindonesia"
+  - "#mlbbindonesia"
+  - "#freefireindonesia"
+  - "#pubgindonesia"
+  - "#valorantindonesia"
+  - "#esportsindonesia"
+  - "#mabar"
+  - "#gameonline"
+  - "#reviewgame"
+  - "#tipsgame"
