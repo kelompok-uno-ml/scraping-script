@@ -17,6 +17,7 @@ from src.common import (
     is_indonesian_caption,
     is_within_age_window,
     load_settings,
+    now_utc,
     resolve_path,
     setup_logging,
 )
@@ -223,7 +224,12 @@ def summarize(df: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def merge(settings: dict[str, Any]) -> dict[str, Any]:
+def default_run_id() -> str:
+    return now_utc().strftime("%Y%m%dT%H%M%SZ")
+
+
+def merge(settings: dict[str, Any], run_id: str | None = None) -> dict[str, Any]:
+    run_id = run_id or default_run_id()
     interim = resolve_path(settings["paths"]["interim"])
     processed = resolve_path(settings["paths"]["processed"])
     processed.mkdir(parents=True, exist_ok=True)
@@ -249,8 +255,9 @@ def merge(settings: dict[str, Any]) -> dict[str, Any]:
     df = df.sort_values(["platform", "post_timestamp", "video_id"]).reset_index(drop=True)
     df = df[SCHEMA]
 
-    csv_path = processed / "dataset_v1.csv"
-    parquet_path = processed / "dataset_v1.parquet"
+    csv_path = processed / f"dataset_{run_id}.csv"
+    parquet_path = processed / f"dataset_{run_id}.parquet"
+    merge_report_path = processed / f"merge_report_{run_id}.json"
     csv_df = df.copy()
     for column in ("post_timestamp", "scrape_timestamp"):
         csv_df[column] = csv_df[column].map(
@@ -264,6 +271,7 @@ def merge(settings: dict[str, Any]) -> dict[str, Any]:
         parquet_path = None
 
     report = {
+        "run_id": run_id,
         "input_rows": raw_rows,
         "input_by_platform": {
             "tiktok": len(tiktok),
@@ -279,23 +287,39 @@ def merge(settings: dict[str, Any]) -> dict[str, Any]:
         "files": {
             "csv": str(csv_path),
             "parquet": str(parquet_path) if parquet_path else None,
+            "merge_report": str(merge_report_path),
         },
     }
-    (processed / "merge_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    LOG.info("Final dataset: %d rows -> %s", len(df), csv_path)
+    merge_report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    (processed / "latest_run.json").write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "csv": str(csv_path),
+                "parquet": str(parquet_path) if parquet_path else None,
+                "merge_report": str(merge_report_path),
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    LOG.info("Final dataset (%s): %d rows -> %s", run_id, len(df), csv_path)
     return report
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    return argparse.ArgumentParser(description="Merge and clean the dataset.").parse_args(argv)
+    parser = argparse.ArgumentParser(description="Merge and clean the dataset.")
+    parser.add_argument("--run-id", help="Optional run label; default is the current UTC timestamp")
+    return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    _ = parse_args(argv)
+    args = parse_args(argv)
     settings = load_settings()
     setup_logging(resolve_path(settings["paths"].get("logs", "logs")) / "scrape.log")
     try:
-        report = merge(settings)
+        report = merge(settings, run_id=args.run_id)
     except RuntimeError as exc:
         LOG.error("%s", exc)
         return 1

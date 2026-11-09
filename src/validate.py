@@ -5,6 +5,7 @@ import argparse
 import json
 import logging
 import sys
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -265,9 +266,32 @@ def validate(
     return report
 
 
+def infer_run_id(path: Path) -> str | None:
+    stem = path.stem
+    if stem.startswith("dataset_"):
+        candidate = stem[len("dataset_"):]
+        if candidate and candidate != "v1":
+            return candidate
+    return None
+
+
+def latest_dataset(processed: Path) -> Path | None:
+    pointer = processed / "latest_run.json"
+    if pointer.exists():
+        try:
+            data = json.loads(pointer.read_text(encoding="utf-8"))
+            csv_path = Path(data.get("csv", ""))
+            if csv_path.exists():
+                return csv_path
+        except (json.JSONDecodeError, OSError):
+            pass
+    candidates = sorted(processed.glob("dataset_*.csv"), key=lambda item: item.stat().st_mtime)
+    return candidates[-1] if candidates else None
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate the final dataset per category.")
-    parser.add_argument("--input", help="CSV path. Default: data/processed/dataset_v1.csv")
+    parser.add_argument("--input", help="CSV path. Default: latest dataset_*.csv")
     parser.add_argument("--strict", action="store_true", help="Exit 1 if acceptance rules fail")
     return parser.parse_args(argv)
 
@@ -277,17 +301,21 @@ def main(argv: list[str] | None = None) -> int:
     settings = load_settings()
     setup_logging(resolve_path(settings["paths"].get("logs", "logs")) / "scrape.log")
 
-    input_path = resolve_path(args.input) if args.input else resolve_path(settings["paths"]["processed"]) / "dataset_v1.csv"
-    if not input_path.exists():
+    processed = resolve_path(settings["paths"]["processed"])
+    input_path = resolve_path(args.input) if args.input else latest_dataset(processed)
+    if input_path is None or not input_path.exists():
         LOG.error("Dataset not found: %s", input_path)
         return 1
 
-    df = pd.read_csv(input_path)
-    merge_path = input_path.parent / "merge_report.json"
+    run_id = infer_run_id(input_path)
+    merge_path = processed / (f"merge_report_{run_id}.json" if run_id else "merge_report.json")
+    if not merge_path.exists():
+        merge_path = processed / "merge_report.json"
     merge_report = json.loads(merge_path.read_text(encoding="utf-8")) if merge_path.exists() else None
 
-    report = validate(df, merge_report, settings)
-    out_path = input_path.parent / "validation_report.json"
+    report = validate(df=pd.read_csv(input_path), merge_report=merge_report, settings=settings)
+    report["run_id"] = run_id
+    out_path = processed / (f"validation_report_{run_id}.json" if run_id else "validation_report.json")
     out_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
 
     print("=== VALIDATION ===")

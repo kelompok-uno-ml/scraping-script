@@ -113,14 +113,23 @@ python -m src.merge
 python -m src.validate
 ```
 
-Outputs:
+Outputs are timestamped with a UTC run ID, for example `20261109T192500Z`:
 
 - `data/interim/tiktok_videos.jsonl`
 - `data/interim/instagram_videos.jsonl`
-- `data/processed/dataset_v1.csv`
-- `data/processed/dataset_v1.parquet`
-- `data/processed/merge_report.json`
-- `data/processed/validation_report.json`
+- `data/processed/dataset_<run_id>.csv`
+- `data/processed/dataset_<run_id>.parquet`
+- `data/processed/merge_report_<run_id>.json`
+- `data/processed/validation_report_<run_id>.json`
+- `data/processed/latest_run.json`
+
+Use a custom label if needed:
+
+```bash
+python -m src.merge --run-id pilot_01
+```
+
+`python -m src.validate` validates the latest dataset automatically.
 
 ### 6. Suggest more seeds
 
@@ -166,7 +175,7 @@ python -m src.scrape_tiktok --seeds-file config/seeds_generated.yaml
 - No creator exceeds 5 videos per category
 - Core columns (`video_id`, `post_timestamp`, `caption`, `likes`, `follower_count`) are null in less than 5% of rows
 
-Actual results are written to `data/processed/validation_report.json`.
+Actual results are written to `data/processed/validation_report_<run_id>.json`.
 
 ## Use with an AI agent
 

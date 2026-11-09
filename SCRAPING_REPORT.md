@@ -86,7 +86,7 @@ Target: 30% small / 40% medium / 30% large. Actual pilot composition is reported
 | `gaming` | `pubgmobile` | 2 |
 | `gaming` | `roblox` | 3 |
 
-Other seeds produced no valid rows in the pilot. The full per-seed table is available in `data/processed/validation_report.json` under `by_seed`.
+Other seeds produced no valid rows in the pilot. The full per-seed table is available in `data/processed/validation_report_<run_id>.json` under `by_seed`.
 
 ## 5. Findings
 
